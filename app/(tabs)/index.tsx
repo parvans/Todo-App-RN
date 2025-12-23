@@ -1,6 +1,6 @@
 import { createHomeStyles } from "@/assets/styles/home.styles";
 import { api } from "@/convex/_generated/api";
-import useTheme, { ColorScheme } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import { useMutation, useQuery } from "convex/react";
 import { Alert, FlatList, StatusBar, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,17 +12,14 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { Ionicons } from "@expo/vector-icons";
 import EmptyState from "@/components/EmptyState";
 import { useState } from "react";
-import { updateTodo } from "@/convex/todos";
-
+import moment from "moment";
 type Todo = Doc<"todos">
 export default function Index() {
-  const { toggleDark, colors }=useTheme();
+  const { colors }=useTheme();
   const [editingId,setEditingId] = useState<Id<"todos"> | null>(null);
   const [editingText,setEditingText] = useState("");
   const homeStyles = createHomeStyles(colors);
   const todos = useQuery(api.todos.getTodos);
-  const addTodo = useMutation(api.todos.addTodo);
-  const clearAllTodos = useMutation(api.todos.clearAllTodos);
   const isLoading = todos === undefined;
   const toggleTodo = useMutation(api.todos.toggleTodo);
   const editTodo = useMutation(api.todos.updateTodo);
@@ -124,6 +121,8 @@ export default function Index() {
           ):(
             
             <View style={homeStyles.todoTextContainer}>
+              <Text style={{color: colors.textMuted,fontStyle:"italic"}}>{moment(item._creationTime).fromNow()}</Text> 
+
               <Text
               style={[
                 homeStyles.todoText,
@@ -149,6 +148,7 @@ export default function Index() {
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
+
             </View>
           )}
           
@@ -175,9 +175,6 @@ export default function Index() {
         ListEmptyComponent={<EmptyState/>}
         showsVerticalScrollIndicator={false}
         />
-        <TouchableOpacity onPress={toggleDark}>
-          <Text>Click</Text>
-        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
